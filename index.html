@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sort the Rubbish - Scratch Quiz | Alphagen Learning</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+:root {
+    --purple:#5E48C4;
+    --purpleDark:#4A3AAD;
+    --purplePale:#EAE7FE;
+    --purpleGhost:#F5F4FF;
+    --yellow:#FFD071;
+    --motion:#4C97FF;
+    --sensing:#5CB1D6;
+    --operators:#59C059;
+    --control:#FFAB19;
+    --looks:#9966FF;
+}
+
+* { box-sizing:border-box; }
+
+body {
+    margin:0;
+    padding:12px;
+    min-height:100vh;
+    background:#0F081D;
+    font-family:Poppins,sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+header {
+    width:1280px;
+    max-width:100%;
+    background:var(--purple);
+    color:white;
+    border-radius:14px;
+    padding:13px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    margin-bottom:12px;
+}
+
+.header-left,.header-right {
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.logo {
+    background:var(--yellow);
+    color:#1A1A1A;
+    padding:10px 16px;
+    border-radius:10px;
+    font-weight:800;
+    font-size:13px;
+}
+
+.lesson-title {
+    font-size:18px;
+    font-weight:800;
+}
+
+.score-box {
+    background:var(--purpleDark);
+    border-radius:10px;
+    padding:10px 16px;
+    font-weight:700;
+    font-size:14px;
+}
+
+.score-box span { color:var(--yellow); }
+
+.audio-btn {
+    border:none;
+    background:var(--purpleDark);
+    color:white;
+    padding:11px 14px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.stage-wrapper {
+    width:100%;
+    max-width:1280px;
+}
+
+.slide-stage {
+    width:1280px;
+    height:720px;
+    background:white;
+    border-radius:26px;
+    position:relative;
+    overflow:hidden;
+    transform-origin:top left;
+}
+
+.slide {
+    display:none;
+    position:absolute;
+    inset:0;
+    padding:32px 55px;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+
+.slide.active { display:flex; }
+
+.badge {
+    background:var(--purpleGhost);
+    border:2px solid var(--purplePale);
+    color:var(--purple);
+    padding:9px 20px;
+    border-radius:30px;
+    font-size:14px;
+    font-weight:800;
+    margin-bottom:18px;
+}
+
+h1 {
+    font-size:48px;
+    line-height:1.25;
+    margin:15px 0;
+}
+
+h2 {
+    font-size:27px;
+    margin:0;
+}
+
+.subtitle {
+    font-size:16px;
+    color:#555;
+    max-width:700px;
+    margin:15px 0 30px;
+}
+
+.primary-btn {
+    background:var(--yellow);
+    color:#1A1A1A;
+    border:none;
+    border-radius:15px;
+    padding:17px 36px;
+    font:800 18px Poppins;
+    cursor:pointer;
+}
+
+.question-card {
+    background:var(--purpleGhost);
+    border:2px solid var(--purplePale);
+    border-radius:22px;
+    padding:20px 30px;
+    width:900px;
+    margin-bottom:20px;
+}
+
+.options {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    width:950px;
+}
+
+.option {
+    min-height:112px;
+    background:white;
+    border:2px solid var(--purplePale);
+    border-radius:18px;
+    cursor:pointer;
+    padding:15px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font:700 18px Poppins;
+    transition:.2s;
+}
+
+.option:hover:not(:disabled) {
+    border-color:var(--purple);
+    background:var(--purpleGhost);
+    transform:translateY(-2px);
+}
+
+.option:disabled { cursor:default; }
+
+.option.correct {
+    border:3px solid #22C55E;
+    background:#F0FDF4;
+}
+
+.option.wrong {
+    border:3px solid #ED5661;
+    background:#FFF0F1;
+}
+
+.scratch-block {
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    min-height:43px;
+    padding:9px 14px;
+    border-radius:6px;
+    color:white;
+    font:500 18px Arial,sans-serif;
+    white-space:nowrap;
+    box-shadow:inset 0 -3px rgba(0,0,0,.16);
+}
+
+.motion { background:var(--motion); }
+.sensing { background:var(--sensing); }
+.operators { background:var(--operators); }
+.control { background:var(--control); }
+.looks { background:var(--looks); }
+
+.number-input {
+    background:white;
+    color:#333;
+    border-radius:18px;
+    padding:4px 10px;
+    min-width:36px;
+    text-align:center;
+    font-size:16px;
+}
+
+.dropdown {
+    background:rgba(0,0,0,.12);
+    padding:5px 9px;
+    border-radius:5px;
+}
+
+.dropdown::after {
+    content:" ▾";
+    font-size:12px;
+}
+
+.reporter {
+    border-radius:25px;
+}
+
+.boolean {
+    clip-path:polygon(
+        13px 0,
+        calc(100% - 13px) 0,
+        100% 50%,
+        calc(100% - 13px) 100%,
+        13px 100%,
+        0 50%
+    );
+    padding:11px 23px;
+}
+
+.code-preview {
+    background:#F8FAFC;
+    border:2px dashed #CBD5E1;
+    border-radius:18px;
+    padding:17px 25px;
+    margin-bottom:18px;
+}
+
+.code-stack {
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:3px;
+}
+
+.feedback {
+    margin-top:16px;
+    padding:12px 22px;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:700;
+    min-height:48px;
+    visibility:hidden;
+}
+
+.feedback.show { visibility:visible; }
+
+.feedback.success {
+    background:#DCFCE7;
+    color:#166534;
+}
+
+.feedback.retry {
+    background:#FFF0F1;
+    color:#993040;
+}
+
+.next-question {
+    margin-top:12px;
+    background:var(--purple);
+    color:white;
+    border:none;
+    padding:13px 26px;
+    border-radius:12px;
+    font:700 15px Poppins;
+    cursor:pointer;
+    visibility:hidden;
+}
+
+.next-question.show { visibility:visible; }
+
+.final-score {
+    background:#FFF3CC;
+    border:2px solid var(--yellow);
+    border-radius:25px;
+    padding:25px 65px;
+    margin:20px 0;
+}
+
+.final-score strong {
+    display:block;
+    font-size:48px;
+    color:var(--purple);
+}
+
+.nav-bar {
+    width:1280px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:12px;
+    transform-origin:top left;
+}
+
+.nav-btn {
+    background:#2A1C68;
+    color:var(--yellow);
+    border:2px solid var(--purple);
+    border-radius:12px;
+    padding:11px 23px;
+    font:700 15px Poppins;
+    cursor:pointer;
+}
+
+.nav-btn:disabled {
+    opacity:.4;
+    cursor:default;
+}
+
+.nav-counter {
+    color:white;
+    font-size:13px;
+    font-weight:600;
+}
+
+.answer-text {
+    color:var(--purple);
+    font-size:20px;
+    font-weight:800;
+}
+
+</style>
+</head>
+
+<body>
+
+<header id="topbar">
+
+    <div class="header-left">
+        <span class="logo">ALPHAGEN LEARNING</span>
+        <span class="lesson-title">
+            Scratch - Sort the Rubbish Quiz
+        </span>
+    </div>
+
+    <div class="header-right">
+        <div class="score-box">
+            <i class="fa-solid fa-star" style="color:#FFD071"></i>
+            Score: <span id="header-score">0</span> / 50
+        </div>
+
+        <button class="audio-btn" id="audio-btn" onclick="toggleAudio()">
+            <i class="fa-solid fa-volume-high"></i>
+        </button>
+    </div>
+
+</header>
+
+<div class="stage-wrapper">
+
+<div class="slide-stage">
+
+<!-- WELCOME -->
+
+<section class="slide active" id="slide-1">
+
+    <div class="badge">SCRATCH QUICK CHALLENGE</div>
+
+    <h1>
+        Sort the Rubbish<br>
+        <span style="color:#5E48C4">Quiz Time!</span>
+    </h1>
+
+   
+
+    <button class="primary-btn" onclick="goToSlide(2)">
+        Start Quiz <i class="fa-solid fa-arrow-right"></i>
+    </button>
+
+</section>
+
+<!-- QUESTION 1 -->
+
+<section class="slide" id="slide-2">
+
+    <div class="badge">QUESTION 1 OF 5 · 10 POINTS</div>
+
+    <div class="question-card">
+        <h2>Which block finds the Bin's X position?</h2>
+    </div>
+
+    <div class="options" id="options-1">
+
+        <button class="option" onclick="answer(1,0,this)">
+            <span class="scratch-block sensing reporter">
+                x position of
+                <span class="dropdown">Bin</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(1,1,this)">
+            <span class="scratch-block sensing reporter">
+                y position of
+                <span class="dropdown">Bin</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(1,2,this)">
+            <span class="scratch-block sensing reporter">
+                direction of
+                <span class="dropdown">Bin</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(1,3,this)">
+            <span class="scratch-block sensing reporter">
+                size of
+                <span class="dropdown">Bin</span>
+            </span>
+        </button>
+
+    </div>
+
+    <div class="feedback" id="feedback-1"></div>
+
+    <button class="next-question" id="next-1" onclick="goToSlide(3)">
+        Next Question →
+    </button>
+
+</section>
+
+<!-- QUESTION 2 -->
+
+<section class="slide" id="slide-3">
+
+    <div class="badge">QUESTION 2 OF 5 · 10 POINTS</div>
+
+    <div class="question-card">
+        <h2>Which comparison checks if 50 is greater than 20?</h2>
+    </div>
+
+    <div class="options" id="options-2">
+
+        <button class="option" onclick="answer(2,0,this)">
+            <span class="scratch-block operators boolean">
+                <span class="number-input">50</span>
+                &lt;
+                <span class="number-input">20</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(2,1,this)">
+            <span class="scratch-block operators boolean">
+                <span class="number-input">50</span>
+                &gt;
+                <span class="number-input">20</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(2,2,this)">
+            <span class="scratch-block operators boolean">
+                <span class="number-input">50</span>
+                =
+                <span class="number-input">20</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(2,3,this)">
+            <span class="scratch-block operators boolean">
+                <span class="number-input">20</span>
+                &gt;
+                <span class="number-input">50</span>
+            </span>
+        </button>
+
+    </div>
+
+    <div class="feedback" id="feedback-2"></div>
+
+    <button class="next-question" id="next-2" onclick="goToSlide(4)">
+        Next Question →
+    </button>
+
+</section>
+
+<!-- QUESTION 3 -->
+
+<section class="slide" id="slide-4">
+
+    <div class="badge">QUESTION 3 OF 5 · 10 POINTS</div>
+
+    <div class="question-card">
+        <h2>Which block checks if rubbish touches the Bin?</h2>
+    </div>
+
+    <div class="options" id="options-3">
+
+        <button class="option" onclick="answer(3,0,this)">
+            <span class="scratch-block control">
+                repeat <span class="number-input">10</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(3,1,this)">
+            <span class="scratch-block control">
+                wait <span class="number-input">1</span> seconds
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(3,2,this)">
+            <span class="scratch-block sensing boolean">
+                touching
+                <span class="dropdown">Bin</span> ?
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(3,3,this)">
+            <span class="scratch-block sensing boolean">
+                touching
+                <span class="dropdown">edge</span> ?
+            </span>
+        </button>
+
+    </div>
+
+    <div class="feedback" id="feedback-3"></div>
+
+    <button class="next-question" id="next-3" onclick="goToSlide(5)">
+        Next Question →
+    </button>
+
+</section>
+
+<!-- QUESTION 4 -->
+
+<section class="slide" id="slide-5">
+
+    <div class="badge">QUESTION 4 OF 5 · 10 POINTS</div>
+
+    <div class="question-card">
+        <h2>What happens if rubbish touches the Bin?</h2>
+    </div>
+
+    <div class="code-preview">
+
+        <div class="code-stack">
+
+            <span class="scratch-block control">
+                if
+                <span class="scratch-block sensing boolean" style="font-size:15px">
+                    touching
+                    <span class="dropdown">Bin</span> ?
+                </span>
+                then
+            </span>
+
+            <span class="scratch-block looks" style="margin-left:25px">
+                hide
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="options" id="options-4">
+
+        <button class="option" onclick="answer(4,0,this)">
+            <span class="answer-text">Rubbish appears</span>
+        </button>
+
+        <button class="option" onclick="answer(4,1,this)">
+            <span class="answer-text">Rubbish moves right</span>
+        </button>
+
+        <button class="option" onclick="answer(4,2,this)">
+            <span class="answer-text">Rubbish grows bigger</span>
+        </button>
+
+        <button class="option" onclick="answer(4,3,this)">
+            <span class="answer-text">Rubbish disappears</span>
+        </button>
+
+    </div>
+
+    <div class="feedback" id="feedback-4"></div>
+
+    <button class="next-question" id="next-4" onclick="goToSlide(6)">
+        Next Question →
+    </button>
+
+</section>
+
+<!-- QUESTION 5 -->
+
+<section class="slide" id="slide-6">
+
+    <div class="badge">QUESTION 5 OF 5 · 10 POINTS</div>
+
+    <div class="question-card">
+        <h2>Fix the bug! The rubbish must move RIGHT when X &lt; 50.</h2>
+    </div>
+
+    <div class="code-preview">
+
+        <div class="code-stack">
+
+            <span class="scratch-block control">
+                if
+                <span class="scratch-block operators boolean" style="font-size:15px">
+                    <span class="number-input">x position</span>
+                    &gt;
+                    <span class="number-input">50</span>
+                </span>
+                then
+            </span>
+
+            <span class="scratch-block motion" style="margin-left:25px">
+                change x by
+                <span class="number-input">10</span>
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="options" id="options-5">
+
+        <button class="option" onclick="answer(5,0,this)">
+            <span class="scratch-block operators boolean">
+                <span class="number-input">x position</span>
+                &gt;
+                <span class="number-input">50</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(5,1,this)">
+            <span class="scratch-block operators boolean">
+                <span class="number-input">x position</span>
+                &lt;
+                <span class="number-input">50</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(5,2,this)">
+            <span class="scratch-block operators boolean">
+                <span class="number-input">x position</span>
+                =
+                <span class="number-input">50</span>
+            </span>
+        </button>
+
+        <button class="option" onclick="answer(5,3,this)">
+            <span class="scratch-block operators boolean">
+                <span class="number-input">x position</span>
+                &gt;
+                <span class="number-input">100</span>
+            </span>
+        </button>
+
+    </div>
+
+    <div class="feedback" id="feedback-5"></div>
+
+    <button class="next-question" id="next-5" onclick="goToSlide(7)">
+        View My Score →
+    </button>
+
+</section>
+
+<!-- RESULTS -->
+
+<section class="slide" id="slide-7">
+
+    <div class="badge">QUIZ COMPLETED!</div>
+
+    <h1>
+        You Did It!<br>
+        <span style="color:#5E48C4">
+            Sorting Superstar!
+        </span>
+    </h1>
+
+    <div class="final-score">
+        <div style="font-size:15px;font-weight:700">
+            YOUR FINAL SCORE
+        </div>
+        <strong id="final-score">0 / 50</strong>
+    </div>
+
+    <p class="subtitle" id="score-message"></p>
+
+    <div style="background:#F5F4FF;border:2px solid #EAE7FE;border-radius:18px;padding:20px 30px;margin-bottom:25px;max-width:700px">
+        <p style="font-size:19px;font-weight:800;color:#5E48C4;margin:0">
+            Keep exploring, keep coding, and keep making the world cleaner!
+        </p>
+    </div>
+
+    <button class="primary-btn" onclick="resetQuiz()">
+        Retake Quiz
+    </button>
+
+</section>
+
+</div>
+
+<div class="nav-bar">
+
+    <button class="nav-btn" id="prev-btn" onclick="move(-1)">
+        ← Previous
+    </button>
+
+    <span class="nav-counter" id="slide-counter">
+        Slide 1 / 7
+    </span>
+
+    <button class="nav-btn" id="next-btn" onclick="move(1)">
+        Next →
+    </button>
+
+</div>
+
+</div>
+
+<script>
+
+let currentSlide=1;
+let totalScore=0;
+let answered={};
+let soundEnabled=true;
+let audioCtx=null;
+
+const totalSlides=7;
+
+const correctAnswers={
+    1:0,
+    2:1,
+    3:2,
+    4:3,
+    5:1
+};
+
+const explanations={
+    1:"The Sensing block can read the Bin's X position!",
+    2:"50 is greater than 20!",
+    3:"Touching Bin checks if the rubbish reaches the Bin!",
+    4:"The hide block makes the rubbish disappear!",
+    5:"Use < because the rubbish must move when X is less than 50!"
+};
+
+function playSound(correct) {
+
+    if(!soundEnabled)return;
+
+    try {
+        audioCtx ??= new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
+
+        if(audioCtx.state==="suspended")audioCtx.resume();
+
+        const osc=audioCtx.createOscillator();
+        const gain=audioCtx.createGain();
+        const now=audioCtx.currentTime;
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.frequency.setValueAtTime(correct?520:240,now);
+        osc.frequency.exponentialRampToValueAtTime(
+            correct?750:180,
+            now+.18
+        );
+
+        gain.gain.setValueAtTime(.05,now);
+        gain.gain.exponentialRampToValueAtTime(.001,now+.24);
+
+        osc.start(now);
+        osc.stop(now+.24);
+    }catch(e){}
+}
+
+function toggleAudio() {
+    soundEnabled=!soundEnabled;
+    document.getElementById("audio-btn").innerHTML=
+        soundEnabled
+        ?'<i class="fa-solid fa-volume-high"></i>'
+        :'<i class="fa-solid fa-volume-xmark"></i>';
+}
+
+function celebrate(count=40) {
+    if(typeof confetti==="function") {
+        confetti({
+            particleCount:count,
+            spread:70,
+            origin:{y:.65}
+        });
+    }
+}
+
+function updateSlides() {
+
+    document.querySelectorAll(".slide").forEach((slide,index)=>{
+        slide.classList.toggle("active",index+1===currentSlide);
+    });
+
+    document.getElementById("slide-counter").textContent=
+        `Slide ${currentSlide} / ${totalSlides}`;
+
+    document.getElementById("prev-btn").disabled=
+        currentSlide===1;
+
+    document.getElementById("next-btn").disabled=
+        currentSlide===totalSlides ||
+        (
+            currentSlide>=2 &&
+            currentSlide<=6 &&
+            !answered[currentSlide-1]
+        );
+
+    if(currentSlide===7)showResults();
+}
+
+function goToSlide(number) {
+
+    if(number<1 || number>totalSlides)return;
+
+    if(
+        number>currentSlide &&
+        currentSlide>=2 &&
+        currentSlide<=6 &&
+        !answered[currentSlide-1]
+    )return;
+
+    currentSlide=number;
+    updateSlides();
+}
+
+function move(direction) {
+    goToSlide(currentSlide+direction);
+}
+
+function answer(question,choice,button) {
+
+    if(answered[question])return;
+
+    answered[question]=true;
+
+    const correct=choice===correctAnswers[question];
+
+    const options=document.querySelectorAll(
+        `#options-${question} .option`
+    );
+
+    options.forEach(option=>option.disabled=true);
+
+    const feedback=document.getElementById(
+        `feedback-${question}`
+    );
+
+    feedback.classList.add("show");
+
+    if(correct) {
+
+        totalScore+=10;
+        button.classList.add("correct");
+        feedback.classList.add("success");
+
+        feedback.textContent=
+            "Great job! +10 points — "+explanations[question];
+
+        playSound(true);
+        celebrate(35);
+
+    }else {
+
+        button.classList.add("wrong");
+        options[correctAnswers[question]].classList.add("correct");
+        feedback.classList.add("retry");
+
+        feedback.textContent=
+            "Good try! "+explanations[question];
+
+        playSound(false);
+    }
+
+    document.getElementById("header-score").textContent=totalScore;
+
+    document.getElementById(
+        `next-${question}`
+    ).classList.add("show");
+
+    updateSlides();
+}
+
+function showResults() {
+
+    document.getElementById("final-score").textContent=
+        `${totalScore} / 50`;
+
+    const message=document.getElementById("score-message");
+
+    if(totalScore===50) {
+        message.textContent="Perfect score! You're a Scratch Superstar!";
+    }else if(totalScore>=30) {
+        message.textContent="Wonderful work! Keep building amazing games!";
+    }else {
+        message.textContent="Great effort! Keep practising and having fun!";
+    }
+
+    celebrate(130);
+}
+
+function resetQuiz() {
+
+    totalScore=0;
+    answered={};
+
+    document.getElementById("header-score").textContent="0";
+
+    for(let q=1;q<=5;q++) {
+
+        document.querySelectorAll(
+            `#options-${q} .option`
+        ).forEach(button=>{
+            button.disabled=false;
+            button.classList.remove("correct","wrong");
+        });
+
+        const feedback=document.getElementById(`feedback-${q}`);
+        feedback.className="feedback";
+        feedback.textContent="";
+
+        document.getElementById(`next-${q}`).classList.remove("show");
+    }
+
+    currentSlide=1;
+    updateSlides();
+}
+
+document.addEventListener("keydown",event=>{
+    if(["INPUT","TEXTAREA","SELECT"].includes(event.target.tagName))return;
+    if(event.key==="ArrowRight")move(1);
+    if(event.key==="ArrowLeft")move(-1);
+});
+
+function scaleStage() {
+
+    const scale=Math.min(1,(window.innerWidth-24)/1280);
+
+    const stage=document.querySelector(".slide-stage");
+    const nav=document.querySelector(".nav-bar");
+    const header=document.getElementById("topbar");
+
+    stage.style.transform=`scale(${scale})`;
+    nav.style.transform=`scale(${scale})`;
+
+    stage.style.marginBottom=`${720*scale-720}px`;
+    nav.style.marginBottom=`${45*scale-45}px`;
+
+    header.style.width=
+        `${Math.min(1280,window.innerWidth-24)}px`;
+}
+
+window.addEventListener("resize",scaleStage);
+
+scaleStage();
+updateSlides();
+
+</script>
+
+</body>
+</html>
